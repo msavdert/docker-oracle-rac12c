@@ -42,9 +42,13 @@ Oracle 12.2 RAC on Docker
 ### 1. Create swap
 
 dd if=/dev/zero of=/swapfile bs=16384 count=1M
+
 mkswap /swapfile
+
 echo "/swapfile none swap sw 0 0" >> /etc/fstab
+
 chmod 600 /swapfile
+
 swapon -a
 
 ### 2. Install docker
