@@ -41,7 +41,7 @@ dd if=/dev/zero of=/depo/asm/disk5 bs=1024k count=20000
 - Docker Host Information
 
 |Kernel Version|3.10.0-693.5.2.el7.x86_64|
-|--------|--------|
+
 
 |rac1|192.168.100.10|Public IP|eth0|
 |rac1-vip|192.168.100.12|Virtual IP (vip)|-|
