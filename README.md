@@ -1,43 +1,9 @@
 # docker-oracle-rac
 Oracle 12.2 RAC on Docker
 
-## Docker Host Information
+## Description
 
-### Google Cloud Engine
-Kernel Version: 3.10.0-693.5.2.el7.x86_64
-Operating System: CentOS Linux 7 (Core)
-OSType: linux
-Architecture: x86_64
-CPUs: 4
-Total Memory: 25.36GiB
-
-## Setup
-
-### 1. Create swap
-
-dd if=/dev/zero of=/swapfile bs=16384 count=1M
-mkswap /swapfile
-echo "/swapfile none swap sw 0 0" >> /etc/fstab
-chmod 600 /swapfile
-swapon -a
-
-### 2. Install docker
-
-curl -fsSL https://get.docker.com/ | sh
-
-systemctl start docker 
-systemctl enable docker
-
-### 3. Create asm disks
-
-mkdir -p /depo/asm/
-
-dd if=/dev/zero of=/depo/asm/disk1 bs=1024k count=20000
-dd if=/dev/zero of=/depo/asm/disk2 bs=1024k count=20000
-dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
-
-
-- Docker Host Information
+- Docker Host Information (on GCE)
 
 |||
 |-----|-----|
@@ -69,6 +35,45 @@ dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
 |VOTE|ocr and voting disk|/u01/asmdisks/disk6|external|47104|
 |DATA|Database files|/u01/asmdisks/disk1,/u01/asmdisks/disk2|external|40
 |FRA|flash recovery area|/u01/asmdisks/disk3|external|20
+
+
+## Setup
+
+### 1. Create swap
+
+dd if=/dev/zero of=/swapfile bs=16384 count=1M
+mkswap /swapfile
+echo "/swapfile none swap sw 0 0" >> /etc/fstab
+chmod 600 /swapfile
+swapon -a
+
+### 2. Install docker
+
+curl -fsSL https://get.docker.com/ | sh
+
+### 3. enable docker service
+
+systemctl start docker 
+systemctl enable docker
+
+### 4. Create asm disks
+
+mkdir -p /depo/asm/
+
+dd if=/dev/zero of=/depo/asm/disk1 bs=1024k count=20000
+dd if=/dev/zero of=/depo/asm/disk2 bs=1024k count=20000
+dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
+
+### 5. download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /media
+    # ls -al /depo/12.2/
+    total 6297260
+    -rw-r--r--. 1 root root 3453696911 Feb 24  2017 linuxx64_12201_database.zip
+    -rw-r--r--. 1 root root 2994687209 Oct 16 20:07 linuxx64_12201_grid_home.zip
+    
+### 6. cloning an Repository
+    #git clone https://github.com/msavdert/docker-oracle-rac/
+
+
 
 
 
