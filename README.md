@@ -65,7 +65,7 @@ dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
 - Storage infomation 
 
 |Diskgroup name|use|asm device path|redundancy|size(GB|
-|--------|--------|-------|-------|-------|-------|
+|--------|--------|-------|-------|-------|
 |VOTE|ocr and voting disk|/u01/asmdisks/disk6|external|47104|
 |DATA|Database files|/u01/asmdisks/disk1,/u01/asmdisks/disk2|external|40
 |FRA|flash recovery area|/u01/asmdisks/disk3|external|20
