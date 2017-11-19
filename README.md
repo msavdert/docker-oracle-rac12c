@@ -97,7 +97,7 @@ Oracle 12.2 RAC on Docker
     --ip 192.168.100.20 \
     melihsavdert/docker-nfs-dns-server
 
-### 9. Start two container for rac installation
+### 9. Start two containers (rac1 and rac2) for rac installation
 
 	docker run --rm \
 	--privileged \
@@ -138,13 +138,9 @@ Oracle 12.2 RAC on Docker
 	docker network connect --ip 10.10.10.10 priv rac1
 	docker network connect --ip 10.10.10.11 priv rac2
 
-### 11. NFS&DNS Server
+### 11. ops
 
 
-### 12. NFS&DNS Server
-
-
-### 8. NFS&DNS Server
 
 
 
