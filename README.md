@@ -40,18 +40,13 @@ dd if=/dev/zero of=/depo/asm/disk5 bs=1024k count=20000
 
 - Docker Host Information
 
+|||
+|-----|-----|
+|Operating System|Oracle Linux 7.x|
+|OSType_Architecture|Linux_86_64|
 |Kernel Version|3.10.0-693.5.2.el7.x86_64|
-
-
-|rac1|192.168.100.10|Public IP|eth0|
-|rac1-vip|192.168.100.12|Virtual IP (vip)|-|
-|rac1.priv|10.10.10.10|Private IP|eth1|
-|rac2|192.168.100.11|Public IP|eth0|
-|rac2-vip|192.168.100.13|Virtual IP (vip)|-|
-|rac2.priv|10.10.10.11|Private IP|eth1|
-|scan1.vip|192.168.100.14|SCAN IP|-|
-|scan2.vip|192.168.100.15|SCAN IP|-|
-|scan3.vip|192.168.100.16|SCAN IP|-|
+|CPUs|4|
+|Memory|16GB|
 
 
 - Network infomation
