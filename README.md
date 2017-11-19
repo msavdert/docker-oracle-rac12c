@@ -73,6 +73,88 @@ Oracle 12.2 RAC on Docker
 ### 6. cloning an Repository
     #git clone https://github.com/msavdert/docker-oracle-rac/
 
+### 7. Create Docker Network for RAC and NFS&DNS Container
+
+    docker network create --driver=bridge \
+    --subnet=192.168.100.0/24 --gateway=192.168.100.1 \
+    --ip-range=192.168.100.128/25 pub
+
+    docker network create --driver=bridge \
+    --subnet=10.10.10.0/24 --gateway=10.10.10.1 \
+    --ip-range=10.10.10.128/25 priv
+
+### 8. NFS&DNS Server
+
+    docker run \
+    --detach \
+    --privileged \
+    -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    --volume=/depo/asm/:/asmdisks \
+    -e TZ=Europe/Istanbul \
+    --name nfs \
+    --hostname nfs.example.com \
+    --net pub \
+    --ip 192.168.100.20 \
+    melihsavdert/docker-nfs-dns-server
+
+### 9. Start two container for rac installation
+
+	docker run --rm \
+	--privileged \
+	--detach \
+	--name rac1 \
+	-h rac1.example.com \
+	--net pub \
+	--add-host nfs:192.168.100.127 \
+	--ip 192.168.100.10 \
+	-p 1521:1521 -p 9803:9803 -p 1158:1158 \
+	-p 5500:5500 -p 7803:7803 -p 7102:7102 \
+	--shm-size 2048m \
+	-e TZ=Europe/Istanbul \
+	-v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+	--volume /depo:/software \
+	--volume /boot:/boot \
+	melihsavdert/docker-oracle-rac
+	
+	docker run --rm \
+	--privileged \
+	--detach \
+	--name rac2 \
+	-h rac2.example.com \
+	--net pub \
+	--add-host nfs:192.168.100.20 \
+	--ip 192.168.100.11 \
+	-p 1522:1521 -p 9804:9803 -p 1159:1158 \
+	-p 5501:5500 -p 7804:7803 -p 7103:7102 \
+	--shm-size 2048m \
+	-e TZ=Europe/Istanbul \
+	-v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+	--volume /depo:/software \
+	--volume /boot:/boot \
+	melihsavdert/docker-oracle-rac
+
+### 10. Connect the private network to the RAC containers.
+
+	docker network connect --ip 10.10.10.10 priv rac1
+	docker network connect --ip 10.10.10.11 priv rac2
+
+### 11. NFS&DNS Server
+
+
+### 12. NFS&DNS Server
+
+
+### 8. NFS&DNS Server
+
+
+
+
+
+
+
+
+
+
 
 
 
