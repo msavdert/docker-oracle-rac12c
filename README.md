@@ -35,19 +35,17 @@ mkdir -p /depo/asm/
 dd if=/dev/zero of=/depo/asm/disk1 bs=1024k count=20000
 dd if=/dev/zero of=/depo/asm/disk2 bs=1024k count=20000
 dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
-dd if=/dev/zero of=/depo/asm/disk4 bs=1024k count=20000
-dd if=/dev/zero of=/depo/asm/disk5 bs=1024k count=20000
+
 
 - Docker Host Information
 
 |||
 |-----|-----|
-|Operating System|Oracle Linux 7.x|
+|Operating System|Centos Linux 7.x|
 |OSType_Architecture|Linux_86_64|
 |Kernel Version|3.10.0-693.5.2.el7.x86_64|
 |CPUs|4|
 |Memory|16GB|
-
 
 - Network infomation
 
@@ -64,7 +62,13 @@ dd if=/dev/zero of=/depo/asm/disk5 bs=1024k count=20000
 |scan2.vip|192.168.100.15|SCAN IP|-|
 |scan3.vip|192.168.100.16|SCAN IP|-|
 
+- Storage infomation 
 
+|Diskgroup name|use|asm device path|redundancy|size(GB|
+|--------|--------|-------|-------|-------|-------|
+|VOTE|ocr and voting disk|/u01/asmdisks/disk6|external|47104|
+|DATA|Database files|/u01/asmdisks/disk1,/u01/asmdisks/disk2|external|40
+|FRA|flash recovery area|/u01/asmdisks/disk3|external|20
 
 
 
