@@ -41,32 +41,28 @@ Oracle 12.2 RAC on Docker
 
 ### 1. Create swap
 
-dd if=/dev/zero of=/swapfile bs=16384 count=1M
-
-mkswap /swapfile
-
-echo "/swapfile none swap sw 0 0" >> /etc/fstab
-
-chmod 600 /swapfile
-
-swapon -a
+    dd if=/dev/zero of=/swapfile bs=16384 count=1M
+    mkswap /swapfile
+    echo "/swapfile none swap sw 0 0" >> /etc/fstab
+    chmod 600 /swapfile
+    swapon -a
 
 ### 2. Install docker
 
-curl -fsSL https://get.docker.com/ | sh
+    curl -fsSL https://get.docker.com/ | sh
 
 ### 3. enable docker service
 
-systemctl start docker 
-systemctl enable docker
+    systemctl start docker 
+    systemctl enable docker
 
 ### 4. Create asm disks
 
-mkdir -p /depo/asm/
+    mkdir -p /depo/asm/
 
-dd if=/dev/zero of=/depo/asm/disk1 bs=1024k count=20000
-dd if=/dev/zero of=/depo/asm/disk2 bs=1024k count=20000
-dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
+    dd if=/dev/zero of=/depo/asm/disk1 bs=1024k count=20000
+    dd if=/dev/zero of=/depo/asm/disk2 bs=1024k count=20000
+    dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
 
 ### 5. download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /media
     # ls -al /depo/12.2/
