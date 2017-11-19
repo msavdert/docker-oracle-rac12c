@@ -41,7 +41,7 @@ dd if=/dev/zero of=/depo/asm/disk5 bs=1024k count=20000
 - Network infomation
 
 |Name|Address IP|Type IP|Interface|
-|--------|--------|-------|-------|-------|
+|--------|--------|-------|-------|
 |storage|192.168.100.20|Public IP|eth0|
 |rac1|192.168.100.10|Public IP|eth0|
 |rac1-vip|192.168.100.12|Virtual IP (vip)|-|
