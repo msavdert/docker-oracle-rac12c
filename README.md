@@ -48,10 +48,10 @@ dd if=/dev/zero of=/depo/asm/disk5 bs=1024k count=20000
 |rac1.priv|10.10.10.10|Private IP|eth1|
 |rac2|192.168.100.11|Public IP|eth0|
 |rac2-vip|192.168.100.13|Virtual IP (vip)|-|
-|rac2.priv|-|10.10.10.11|Private IP|eth1|
-|scan1.vip|-|192.168.100.14|SCAN IP|-|
-|scan2.vip|-|192.168.100.15|SCAN IP|-|
-|scan3.vip|-|192.168.100.16|SCAN IP|-|
+|rac2.priv|10.10.10.11|Private IP|eth1|
+|scan1.vip|192.168.100.14|SCAN IP|-|
+|scan2.vip|192.168.100.15|SCAN IP|-|
+|scan3.vip|192.168.100.16|SCAN IP|-|
 
 
 
