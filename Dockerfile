@@ -41,7 +41,7 @@ RUN echo "oracle:oracle" | chpasswd
 RUN echo "root:oracle" | chpasswd
 
 # Disable SELinux
-#RUN sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+RUN sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
 # Add ulimits configuration file for grid user
 # oracle user ulimits configuration file already added by oracle-rdbms-server-11gR2-preinstall
