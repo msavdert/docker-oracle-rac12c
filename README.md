@@ -425,15 +425,15 @@ Oracle 12.2 RAC on Docker
 
 	docker exec -it rac1 su - oracle -c 'sqlplus / as sysdba'
 
-	SQL> select name, cdb from v$database;
+#### SQL> select name, cdb from v$database;
 
-	|NAME|CDB|
-	|--------|--------|
-	|RAC|YES|
+|NAME|CDB|
+|--------|--------|
+|RAC|YES|
 
-	SQL> show pdbs
+#### SQL> show pdbs
 
-	|CON_ID|CON_NAME|OPEN MODE|RESTRICTED|
-	|--------|--------|--------|-------|
-	|2|PDB$SEED|READ ONLY|NO|
-	|3|PDB1|READ WRITE|NO|
+|CON_ID|CON_NAME|OPEN MODE|RESTRICTED|
+|--------|--------|--------|-------|
+|2|PDB$SEED|READ ONLY|NO|
+|3|PDB1|READ WRITE|NO|
