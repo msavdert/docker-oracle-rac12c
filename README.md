@@ -411,7 +411,7 @@ Oracle 12.2 RAC on Docker
 	docker exec -it rac1 su - grid -c 'ocrcheck'
 	docker exec -it rac1 su - grid -c 'crsctl query css votedisk'
 
-## I have checked GIMR configuration database with:
+#### I have checked GIMR configuration database with:
 
 	docker exec -it rac1 su - grid -c 'srvctl config mgmtdb'
 
@@ -427,13 +427,13 @@ Oracle 12.2 RAC on Docker
 
 	SQL> select name, cdb from v$database;
 
-|NAME|CDB|
-|--------|--------|
-|RAC|YES|
+	|NAME|CDB|
+	|--------|--------|
+	|RAC|YES|
 
 	SQL> show pdbs
 
-|CON_ID|CON_NAME|OPEN MODE|RESTRICTED|
-|--------|--------|--------|-------|
-|2|PDB$SEED|READ ONLY|NO|
-|3|PDB1|READ WRITE|NO|
+	|CON_ID|CON_NAME|OPEN MODE|RESTRICTED|
+	|--------|--------|--------|-------|
+	|2|PDB$SEED|READ ONLY|NO|
+	|3|PDB1|READ WRITE|NO|
