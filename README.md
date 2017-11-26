@@ -366,6 +366,9 @@ Oracle 12.2 RAC on Docker
 
 ### 25. Execute the root script each nodes
 
+	As a root user, execute the following script(s):
+		1. /u01/app/oracle/product/12.2.0.1/dbhome_1/root.sh
+
 	docker exec -it rac1 /u01/app/oracle/product/12.2.0.1/dbhome_1/root.sh
 	docker exec -it rac2 /u01/app/oracle/product/12.2.0.1/dbhome_1/root.sh
 
@@ -419,7 +422,7 @@ Oracle 12.2 RAC on Docker
 	docker exec -it rac1 su - grid -c 'srvctl status diskgroup -diskgroup DATA'
 
 	docker exec -it rac1 su - grid -c 'srvctl status database -d RAC'
-	docker exec -it rac1 su - grid -c 'srvctl config database -d  RAC'
+	docker exec -it rac1 su - grid -c 'srvctl config database -d RAC'
 
 	docker exec -it rac1 su - grid -c 'lsnrctl status'
 
