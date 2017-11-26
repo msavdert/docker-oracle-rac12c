@@ -60,20 +60,21 @@ Oracle 12.2 RAC on Docker
 
     mkdir -p /depo/asm/
 
-    dd if=/dev/zero of=/depo/asm/disk1 bs=1024k count=20000
-    dd if=/dev/zero of=/depo/asm/disk2 bs=1024k count=20000
-    dd if=/dev/zero of=/depo/asm/disk3 bs=1024k count=20000
+    dd if=/dev/zero of=/depo/asm/asm-data01 bs=1024k count=20000
+    dd if=/dev/zero of=/depo/asm/asm-data02 bs=1024k count=20000
+    dd if=/dev/zero of=/depo/asm/asm-fra01 bs=1024k count=20000
+    dd if=/dev/zero of=/depo/asm/asm-crs01 bs=1024k count=2000
+    dd if=/dev/zero of=/depo/asm/asm-crs02 bs=1024k count=2000
+    dd if=/dev/zero of=/depo/asm/asm-crs03 bs=1024k count=2000
 
 ### 5. download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /media
+
     # ls -al /depo/12.2/
     total 6297260
     -rw-r--r--. 1 root root 3453696911 Feb 24  2017 linuxx64_12201_database.zip
     -rw-r--r--. 1 root root 2994687209 Oct 16 20:07 linuxx64_12201_grid_home.zip
-    
-### 6. cloning an Repository
-    #git clone https://github.com/msavdert/docker-oracle-rac/
 
-### 7. Create Docker Network for RAC and NFS&DNS Container
+### 6. Create Docker Network for RAC and NFS&DNS Container
 
     docker network create --driver=bridge \
     --subnet=192.168.100.0/24 --gateway=192.168.100.1 \
@@ -83,7 +84,7 @@ Oracle 12.2 RAC on Docker
     --subnet=10.10.10.0/24 --gateway=10.10.10.1 \
     --ip-range=10.10.10.128/25 priv
 
-### 8. NFS&DNS Server
+### 7. NFS&DNS Server
 
     docker run \
     --detach \
@@ -97,7 +98,7 @@ Oracle 12.2 RAC on Docker
     --ip 192.168.100.20 \
     melihsavdert/docker-nfs-dns-server
 
-### 9. Start two containers (rac1 and rac2) for rac installation
+### 8. Start two containers (rac1 and rac2) for rac installation
 
 	docker run --rm \
 	--privileged \
@@ -133,25 +134,176 @@ Oracle 12.2 RAC on Docker
 	--volume /boot:/boot \
 	melihsavdert/docker-oracle-rac
 
-### 10. Connect the private network to the RAC containers.
+### 9. Connect the private network to the RAC containers.
 
 	docker network connect --ip 10.10.10.10 priv rac1
 	docker network connect --ip 10.10.10.11 priv rac2
 
-### 11. ops
+### 10. Configure DNS for RAC cluster containers
 
+	docker exec -it rac1 cp /etc/resolv.conf /tmp/resolv.conf && \
+	docker exec -it rac1 sed -i '/search/s/$/ example.com\nnameserver 192.168.100.20/' /tmp/resolv.conf && \
+	docker exec -it rac1 cp -f /tmp/resolv.conf /etc/resolv.conf
 
+	docker exec -it rac2 cp /etc/resolv.conf /tmp/resolv.conf && \
+	docker exec -it rac2 sed -i '/search/s/$/ example.com\nnameserver 192.168.100.20/' /tmp/resolv.conf && \
+	docker exec -it rac2 cp -f /tmp/resolv.conf /etc/resolv.conf
 
+### 11. Mount NFS server for RAC cluster container and give permissions
 
+	docker exec -it rac1 mount /u01/asmdisks/ && \
+	docker exec -it rac1 chown -R grid:asmadmin /u01/asmdisks/ && \
+	docker exec -it rac1 chmod -R 777 /u01/asmdisks/
 
+	docker exec -it rac2 mount /u01/asmdisks/ && \
+	docker exec -it rac2 chown -R grid:asmadmin /u01/asmdisks/ && \
+	docker exec -it rac2 chmod -R 777 /u01/asmdisks/
 
+### 12. Edit /etc/hosts file as follows
 
+	docker exec -it rac1 vi /etc/hosts
+	docker exec -it rac2 vi /etc/hosts
 
+	# Public
+	192.168.100.10 rac1.example.com rac1
+	192.168.100.11 rac2.example.com rac2
+	# Private
+	#10.10.10.10 rac1-priv.example.com rac1-priv
+	#10.10.10.11 rac2-priv.example.com rac2-priv
+	# Virtual
+	#192.168.100.12 rac1-vip.example.com rac1-vip
+	#192.168.100.13 rac2-vip.example.com rac2-vip
+	# SCAN
+	#192.168.100.14 rac-scan.example.com rac-scan
+	#192.168.100.15 rac-scan.example.com rac-scan
+	#192.168.100.16 rac-scan.example.com rac-scan
 
+### 13. Check DNS is healthy
 
+	$ docker exec -it rac1 nslookup rac-scan
+	Server:		192.168.100.20
+	Address:	192.168.100.20#53
 
+	Name:	rac-scan.example.com
+	Address: 192.168.100.16
+	Name:	rac-scan.example.com
+	Address: 192.168.100.15
+	Name:	rac-scan.example.com
+	Address: 192.168.100.14
 
+### 14. Copy Oracle Database and Grid Infrastructure inside the rac1 container
 
+	docker exec -it rac1 su - oracle -c ' \
+	unzip -q /software/12.2/linuxx64_12201_database.zip -d /u01/software/'
 
+	docker exec -it rac1 su - grid -c ' \
+	unzip -q /software/12.2/linuxx64_12201_grid_home.zip -d /u01/app/12.2.0.1/grid/'
 
+### 15. Install the cvuqdisk package on both cluster nodes
 
+	docker exec -it rac1 rpm -Uvh /u01/app/12.2.0.1/grid/cv/rpm/cvuqdisk*
+	docker exec -it rac1 scp /u01/app/12.2.0.1/grid/cv/rpm/cvuqdisk-1.0.10-1.rpm root@192.168.100.11:/root
+	docker exec -it rac2 rpm -Uvh /root/cvuqdisk*
+	
+### 16. Edit grid user .bash_profile for ORACLE_SID as follows
+	
+	docker exec -it rac1 su - grid -c ' \
+	echo -e "export ORACLE_SID=+ASM1" >> /home/grid/.bash_profile && source /home/grid/.bash_profile'
+
+	ocker exec -it rac2 su - grid -c ' \
+	echo -e "export ORACLE_SID=+ASM2" >> /home/grid/.bash_profile && source /home/grid/.bash_profile'
+
+### 17. Configure the Grid Infrastructure by running the following as the "grid" user.
+
+	docker exec -it rac1 su - grid -c ' \
+	/u01/app/12.2.0.1/grid/gridSetup.sh -silent \
+	-ignorePrereqFailure \
+	-responseFile /u01/app/12.2.0.1/grid/install/response/gridsetup.rsp \
+	INVENTORY_LOCATION=/u01/app/oraInventory \
+	oracle.install.option=CRS_CONFIG \
+	ORACLE_BASE=/u01/app/grid \
+	oracle.install.asm.OSDBA=asmdba \
+	oracle.install.asm.OSOPER=asmoper \
+	oracle.install.asm.OSASM=asmadmin \
+	oracle.install.crs.config.gpnp.scanName=rac-scan \
+	oracle.install.crs.config.gpnp.scanPort=1521 \
+	oracle.install.crs.config.ClusterConfiguration=STANDALONE \
+	oracle.install.crs.config.configureAsExtendedCluster=false \
+	oracle.install.crs.config.clusterName=rac \
+	oracle.install.crs.config.gpnp.configureGNS=false \
+	oracle.install.crs.config.autoConfigureClusterNodeVIP=false \
+	oracle.install.crs.config.clusterNodes=rac1.example.com:rac1-vip.example.com:HUB,rac2.example.com:rac2-vip.example.com:HUB \
+	oracle.install.crs.config.networkInterfaceList=eth0:192.168.100.0:1,eth1:10.10.10.0:5 \
+	oracle.install.asm.configureGIMRDataDG=false \
+	oracle.install.asm.storageOption=ASM \
+	oracle.install.asmOnNAS.configureGIMRDataDG=false \
+	oracle.install.asm.SYSASMPassword=oracle \
+	oracle.install.asm.diskGroup.name=DATA \
+	oracle.install.asm.diskGroup.redundancy=EXTERNAL \
+	oracle.install.asm.diskGroup.AUSize=4 \
+	oracle.install.asm.diskGroup.disks=/u01/asmdisks/disk1,/u01/asmdisks/disk2 \
+	oracle.install.asm.diskGroup.diskDiscoveryString=/u01/asmdisks/disk* \
+	oracle.install.asm.monitorPassword=oracle \
+	oracle.install.asm.configureAFD=false \
+	oracle.install.crs.configureRHPS=false \
+	oracle.install.crs.config.ignoreDownNodes=false \
+	oracle.install.config.managementOption=NONE \
+	oracle.install.config.omsPort=0 \
+	oracle.install.crs.rootconfig.executeRootScript=false \
+	-waitForCompletion'
+
+### 18. Execute the root script each node
+
+	As a root user, execute the following script(s):
+		1. /u01/app/12.2.0.1/grid/root.sh
+
+	docker exec -it rac1 /u01/app/12.2.0.1/grid/root.sh
+	docker exec -it rac2 /u01/app/12.2.0.1/grid/root.sh
+	
+### 19. As install user, execute the following command to complete the configuration
+
+	docker exec -it rac1 su - grid -c ' \
+	/u01/app/12.2.0.1/grid/gridSetup.sh -executeConfigTools -silent \
+	-ignorePrereqFailure \
+	-responseFile /u01/app/12.2.0.1/grid/install/response/gridsetup.rsp \
+	INVENTORY_LOCATION=/u01/app/oraInventory \
+	oracle.install.option=CRS_CONFIG \
+	ORACLE_BASE=/u01/app/grid \
+	oracle.install.asm.OSDBA=asmdba \
+	oracle.install.asm.OSOPER=asmoper \
+	oracle.install.asm.OSASM=asmadmin \
+	oracle.install.crs.config.gpnp.scanName=rac-scan \
+	oracle.install.crs.config.gpnp.scanPort=1521 \
+	oracle.install.crs.config.ClusterConfiguration=STANDALONE \
+	oracle.install.crs.config.configureAsExtendedCluster=false \
+	oracle.install.crs.config.clusterName=rac \
+	oracle.install.crs.config.gpnp.configureGNS=false \
+	oracle.install.crs.config.autoConfigureClusterNodeVIP=false \
+	oracle.install.crs.config.clusterNodes=rac1.example.com:rac1-vip.example.com:HUB,rac2.example.com:rac2-vip.example.com:HUB \
+	oracle.install.crs.config.networkInterfaceList=eth0:192.168.100.0:1,eth1:10.10.10.0:5 \
+	oracle.install.asm.configureGIMRDataDG=false \
+	oracle.install.asm.storageOption=ASM \
+	oracle.install.asmOnNAS.configureGIMRDataDG=false \
+	oracle.install.asm.SYSASMPassword=oracle \
+	oracle.install.asm.diskGroup.name=DATA \
+	oracle.install.asm.diskGroup.redundancy=EXTERNAL \
+	oracle.install.asm.diskGroup.AUSize=4 \
+	oracle.install.asm.diskGroup.disks=/u01/asmdisks/disk1,/u01/asmdisks/disk2 \
+	oracle.install.asm.diskGroup.diskDiscoveryString=/u01/asmdisks/disk* \
+	oracle.install.asm.monitorPassword=oracle \
+	oracle.install.asm.configureAFD=false \
+	oracle.install.crs.configureRHPS=false \
+	oracle.install.crs.config.ignoreDownNodes=false \
+	oracle.install.config.managementOption=NONE \
+	oracle.install.config.omsPort=0 \
+	oracle.install.crs.rootconfig.executeRootScript=false \
+	-waitForCompletion'
+	
+### 20. Check status of grid software
+	
+	docker exec -it rac1 su - grid -c ' crsctl check cluster -all'
+	docker exec -it rac1 su - grid -c ' crs_stat -t'
+	docker exec -it rac1 su - grid -c ' crsctl stat res -t'
+	
+### 21. 	
+	
