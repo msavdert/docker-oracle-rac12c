@@ -36,6 +36,11 @@ Oracle 12.2 RAC on Docker
 |DATA|Database files|/u01/asmdisks/disk1,/u01/asmdisks/disk2|external|40
 |FRA|flash recovery area|/u01/asmdisks/disk3|external|20
 
+|Username|Password|
+|--------|--------|
+|oracle|oracle|
+|grid|oracle|
+|root|oracle|
 
 ## Setup
 
@@ -210,7 +215,7 @@ Oracle 12.2 RAC on Docker
 	docker exec -it rac1 su - grid -c ' \
 	echo -e "export ORACLE_SID=+ASM1" >> /home/grid/.bash_profile && source /home/grid/.bash_profile'
 
-	ocker exec -it rac2 su - grid -c ' \
+	docker exec -it rac2 su - grid -c ' \
 	echo -e "export ORACLE_SID=+ASM2" >> /home/grid/.bash_profile && source /home/grid/.bash_profile'
 
 ### 17. Use the cluvfy stage -pre crsinst command with either the -file, -n, -flex, or -upgrade parameters to check the specified nodes before installing or upgrading Oracle Clusterware.
