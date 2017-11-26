@@ -106,7 +106,7 @@ Oracle 12.2 RAC on Docker
 	--name rac1 \
 	-h rac1.example.com \
 	--net pub \
-	--add-host nfs:192.168.100.127 \
+	--add-host nfs:192.168.100.20 \
 	--ip 192.168.100.10 \
 	-p 1521:1521 -p 9803:9803 -p 1158:1158 \
 	-p 5500:5500 -p 7803:7803 -p 7102:7102 \
@@ -213,7 +213,11 @@ Oracle 12.2 RAC on Docker
 	ocker exec -it rac2 su - grid -c ' \
 	echo -e "export ORACLE_SID=+ASM2" >> /home/grid/.bash_profile && source /home/grid/.bash_profile'
 
-### 17. Configure the Grid Infrastructure by running the following as the "grid" user.
+### 17. Use the cluvfy stage -pre crsinst command with either the -file, -n, -flex, or -upgrade parameters to check the specified nodes before installing or upgrading Oracle Clusterware.
+
+	docker exec -it rac1 su - grid -c ' /u01/app/12.2.0.1/grid/runcluvfy.sh stage -pre crsinst -fixupnoexec -n rac1,rac2 -verbose'
+
+### 18. Configure the Grid Infrastructure by running the following as the "grid" user.
 
 	docker exec -it rac1 su - grid -c ' \
 	/u01/app/12.2.0.1/grid/gridSetup.sh -silent \
@@ -252,7 +256,7 @@ Oracle 12.2 RAC on Docker
 	oracle.install.crs.rootconfig.executeRootScript=false \
 	-waitForCompletion'
 
-### 18. Execute the root script each nodes
+### 19. Execute the root script each nodes
 
 	As a root user, execute the following script(s):
 		1. /u01/app/12.2.0.1/grid/root.sh
@@ -260,7 +264,7 @@ Oracle 12.2 RAC on Docker
 	docker exec -it rac1 /u01/app/12.2.0.1/grid/root.sh
 	docker exec -it rac2 /u01/app/12.2.0.1/grid/root.sh
 	
-### 19. As install user, execute the following command to complete the configuration
+### 20. As install user, execute the following command to complete the configuration
 
 	docker exec -it rac1 su - grid -c ' \
 	/u01/app/12.2.0.1/grid/gridSetup.sh -executeConfigTools -silent \
@@ -299,11 +303,137 @@ Oracle 12.2 RAC on Docker
 	oracle.install.crs.rootconfig.executeRootScript=false \
 	-waitForCompletion'
 	
-### 20. Check status of grid software
+### 21. Check status of grid software
 	
 	docker exec -it rac1 su - grid -c ' crsctl check cluster -all'
 	docker exec -it rac1 su - grid -c ' crs_stat -t'
 	docker exec -it rac1 su - grid -c ' crsctl stat res -t'
 	
-### 21. 	
-	
+### 22. Create FRA disk group for Fast Recovery Area
+
+	docker exec -it rac1 su - grid -c ' \
+	asmca -silent -createDiskGroup \
+	       -diskGroupName FRA \
+	           -disk '/u01/asmdisks/asm-fra01*' \
+	       -redundancy EXTERNAL \
+ 	      -au_size 4'
+
+### 23. Edit oracle user .bash_profile for ORACLE_SID and ORACLE_UNQNAME as follows
+
+	docker exec -it rac1 su - oracle -c ' \
+	echo -e "
+	export ORACLE_UNQNAME=RAC\n\
+	export ORACLE_SID=RAC1\n\
+	" >> /home/oracle/.bash_profile'
+
+	docker exec -it rac2 su - oracle -c ' \
+	echo -e "
+	export ORACLE_UNQNAME=RAC\n\
+	export ORACLE_SID=RAC2\n\
+	" >> /home/oracle/.bash_profile'
+
+### 24. Install the Database Software with softwareonly option by running the following as the "oracle" user.
+
+	docker exec -it rac1 su - oracle -c ' \
+	/u01/software/database/runInstaller -silent -ignoreSysPrereqs -ignorePrereqFailure \
+	-responseFile /u01/software/database/response/db_install.rsp   \
+	oracle.install.option=INSTALL_DB_SWONLY \
+	SELECTED_LANGUAGES=en \
+	UNIX_GROUP_NAME=oinstall \
+	ORACLE_BASE=$ORACLE_BASE \
+	ORACLE_HOME=$ORACLE_HOME \
+	INVENTORY_LOCATION=/u01/app/oraInventory \
+	oracle.install.db.InstallEdition=EE \
+	oracle.install.db.OSDBA_GROUP=dba \
+	oracle.install.db.OSOPER_GROUP=dba \
+	oracle.install.db.OSBACKUPDBA_GROUP=dba \
+	oracle.install.db.OSDGDBA_GROUP=dba \
+	oracle.install.db.OSKMDBA_GROUP=dba \
+	oracle.install.db.OSRACDBA_GROUP=dba \
+	oracle.install.db.CLUSTER_NODES=rac1,rac2 \
+	oracle.install.db.isRACOneInstall=false \
+	oracle.install.db.rac.serverpoolCardinality=0 \
+	oracle.install.db.config.starterdb.type=GENERAL_PURPOSE \
+	oracle.install.db.ConfigureAsContainerDB=false \
+	oracle.install.db.config.starterdb.memoryOption=false \
+	oracle.install.db.config.starterdb.installExampleSchemas=false \
+	oracle.install.db.config.starterdb.managementOption=DEFAULT \
+	oracle.install.db.config.starterdb.omsPort=0 \
+	oracle.install.db.config.starterdb.enableRecovery=false \
+	SECURITY_UPDATES_VIA_MYORACLESUPPORT=false \
+	DECLINE_SECURITY_UPDATES=true \
+	-waitForCompletion'
+
+### 25. Execute the root script each nodes
+
+	docker exec -it rac1 /u01/app/oracle/product/12.2.0.1/dbhome_1/root.sh
+	docker exec -it rac2 /u01/app/oracle/product/12.2.0.1/dbhome_1/root.sh
+
+### 26. If you want you can delete database software file
+
+	docker exec -it rac1 rm -rf /u01/software/database
+
+### 27. Use the cluvfy stage -pre dbcfg command to check the specified nodes before configuring an Oracle RAC database to verify whether your system meets all of the criteria for creating a database or for making a database configuration change.
+
+	docker exec -it rac1 su - oracle -c ' /u01/app/12.2.0.1/grid/runcluvfy.sh stage -pre dbcfg -fixup -n rac1,rac2 -d $ORACLE_HOME -verbose'
+
+### 28. Create a container database named RAC with one pluggable database named PDB1:
+
+	docker exec -it rac1 su - oracle -c ' \
+	dbca -silent -createDatabase \
+	-templateName General_Purpose.dbc \
+	 -gdbName RAC \
+	 -SysPassword oracle \
+	 -createAsContainerDatabase true \
+	    -numberofPDBs 1 \
+	    -pdbName PDB1 \
+	    -pdbAdminUserName pdba \
+	    -pdbAdminPassword oracle \
+	 -SystemPassword oracle \
+	 -emConfiguration none  \
+	 -redoLogFileSize 384 \
+	 -recoveryAreaDestination +FRA \
+	 -storageType ASM \
+	   -asmsnmpPassword oracle \
+	   -asmSysPassword oracle  \
+	   -diskGroupName +DATA \
+	 -listeners LISTENER \
+	-totalMemory 4096 \
+	 -registerWithDirService false \
+	 -characterSet AL32UTF8 \
+	 -nationalCharacterSet AL16UTF16 \
+	 -databaseType MULTIPURPOSE \
+	 -nodelist rac1,rac2'
+
+### 29. Check status of Cluster and Database
+
+	docker exec -it rac1 su - grid -c 'crsctl stat res -t'
+	docker exec -it rac1 su - grid -c 'ocrcheck'
+	docker exec -it rac1 su - grid -c 'crsctl query css votedisk'
+
+## I have checked GIMR configuration database with:
+
+	docker exec -it rac1 su - grid -c 'srvctl config mgmtdb'
+
+	docker exec -it rac1 su - grid -c 'srvctl status diskgroup -diskgroup FRA'
+	docker exec -it rac1 su - grid -c 'srvctl status diskgroup -diskgroup DATA'
+
+	docker exec -it rac1 su - grid -c 'srvctl status database -d RAC'
+	docker exec -it rac1 su - grid -c 'srvctl config database -d  RAC'
+
+	docker exec -it rac1 su - grid -c 'lsnrctl status'
+
+	docker exec -it rac1 su - oracle -c 'sqlplus / as sysdba'
+
+	SQL> select name, cdb from v$database;
+
+|NAME|CDB|
+|--------|--------|
+|RAC|YES|
+
+	SQL> show pdbs
+
+|CON_ID|CON_NAME|OPEN MODE|RESTRICTED|
+|--------|--------|--------|-------|
+|2|PDB$SEED|READ ONLY|NO|
+|3|PDB1|READ WRITE|NO|
