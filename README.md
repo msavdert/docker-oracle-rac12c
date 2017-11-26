@@ -241,8 +241,8 @@ Oracle 12.2 RAC on Docker
 	oracle.install.asm.diskGroup.name=DATA \
 	oracle.install.asm.diskGroup.redundancy=EXTERNAL \
 	oracle.install.asm.diskGroup.AUSize=4 \
-	oracle.install.asm.diskGroup.disks=/u01/asmdisks/disk1,/u01/asmdisks/disk2 \
-	oracle.install.asm.diskGroup.diskDiscoveryString=/u01/asmdisks/disk* \
+	oracle.install.asm.diskGroup.disks=/u01/asmdisks/asm-data01,/u01/asmdisks/asm-data02 \
+	oracle.install.asm.diskGroup.diskDiscoveryString=/u01/asmdisks/asm* \
 	oracle.install.asm.monitorPassword=oracle \
 	oracle.install.asm.configureAFD=false \
 	oracle.install.crs.configureRHPS=false \
@@ -288,8 +288,8 @@ Oracle 12.2 RAC on Docker
 	oracle.install.asm.diskGroup.name=DATA \
 	oracle.install.asm.diskGroup.redundancy=EXTERNAL \
 	oracle.install.asm.diskGroup.AUSize=4 \
-	oracle.install.asm.diskGroup.disks=/u01/asmdisks/disk1,/u01/asmdisks/disk2 \
-	oracle.install.asm.diskGroup.diskDiscoveryString=/u01/asmdisks/disk* \
+	oracle.install.asm.diskGroup.disks=/u01/asmdisks/asm-data01,/u01/asmdisks/asm-data02 \
+	oracle.install.asm.diskGroup.diskDiscoveryString=/u01/asmdisks/asm* \
 	oracle.install.asm.monitorPassword=oracle \
 	oracle.install.asm.configureAFD=false \
 	oracle.install.crs.configureRHPS=false \
