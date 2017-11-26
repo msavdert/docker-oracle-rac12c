@@ -67,14 +67,14 @@ Oracle 12.2 RAC on Docker
     dd if=/dev/zero of=/depo/asm/asm-crs02 bs=1024k count=2000
     dd if=/dev/zero of=/depo/asm/asm-crs03 bs=1024k count=2000
 
-### 5. download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /media
+### 5. download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /depo/12.2/
 
     # ls -al /depo/12.2/
     total 6297260
     -rw-r--r--. 1 root root 3453696911 Feb 24  2017 linuxx64_12201_database.zip
     -rw-r--r--. 1 root root 2994687209 Oct 16 20:07 linuxx64_12201_grid_home.zip
 
-### 6. Create Docker Network for RAC and NFS&DNS Container
+### 6. Create Docker Network for RAC and NFS&DNS Containers
 
     docker network create --driver=bridge \
     --subnet=192.168.100.0/24 --gateway=192.168.100.1 \
@@ -84,7 +84,7 @@ Oracle 12.2 RAC on Docker
     --subnet=10.10.10.0/24 --gateway=10.10.10.1 \
     --ip-range=10.10.10.128/25 priv
 
-### 7. NFS&DNS Server
+### 7. Start NFS&DNS Server Container
 
     docker run \
     --detach \
@@ -134,7 +134,7 @@ Oracle 12.2 RAC on Docker
 	--volume /boot:/boot \
 	melihsavdert/docker-oracle-rac
 
-### 9. Connect the private network to the RAC containers.
+### 9. Connect the private network to the RAC cluster containers.
 
 	docker network connect --ip 10.10.10.10 priv rac1
 	docker network connect --ip 10.10.10.11 priv rac2
@@ -149,7 +149,7 @@ Oracle 12.2 RAC on Docker
 	docker exec -it rac2 sed -i '/search/s/$/ example.com\nnameserver 192.168.100.20/' /tmp/resolv.conf && \
 	docker exec -it rac2 cp -f /tmp/resolv.conf /etc/resolv.conf
 
-### 11. Mount NFS server for RAC cluster container and give permissions
+### 11. Mount NFS server for RAC cluster containers and give permissions
 
 	docker exec -it rac1 mount /u01/asmdisks/ && \
 	docker exec -it rac1 chown -R grid:asmadmin /u01/asmdisks/ && \
@@ -159,7 +159,7 @@ Oracle 12.2 RAC on Docker
 	docker exec -it rac2 chown -R grid:asmadmin /u01/asmdisks/ && \
 	docker exec -it rac2 chmod -R 777 /u01/asmdisks/
 
-### 12. Edit /etc/hosts file as follows
+### 12. Edit /etc/hosts file each nodes as follows 
 
 	docker exec -it rac1 vi /etc/hosts
 	docker exec -it rac2 vi /etc/hosts
@@ -199,7 +199,7 @@ Oracle 12.2 RAC on Docker
 	docker exec -it rac1 su - grid -c ' \
 	unzip -q /software/12.2/linuxx64_12201_grid_home.zip -d /u01/app/12.2.0.1/grid/'
 
-### 15. Install the cvuqdisk package on both cluster nodes
+### 15. Install the cvuqdisk package on each cluster nodes
 
 	docker exec -it rac1 rpm -Uvh /u01/app/12.2.0.1/grid/cv/rpm/cvuqdisk*
 	docker exec -it rac1 scp /u01/app/12.2.0.1/grid/cv/rpm/cvuqdisk-1.0.10-1.rpm root@192.168.100.11:/root
@@ -252,7 +252,7 @@ Oracle 12.2 RAC on Docker
 	oracle.install.crs.rootconfig.executeRootScript=false \
 	-waitForCompletion'
 
-### 18. Execute the root script each node
+### 18. Execute the root script each nodes
 
 	As a root user, execute the following script(s):
 		1. /u01/app/12.2.0.1/grid/root.sh
