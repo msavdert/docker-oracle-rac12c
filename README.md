@@ -32,9 +32,9 @@ Oracle 12.2 RAC on Docker
 
 |Diskgroup name|use|asm device path|redundancy|size(GB|
 |--------|--------|-------|-------|-------|
-|VOTE|ocr and voting disk|/u01/asmdisks/disk6|external|47104|
-|DATA|Database files|/u01/asmdisks/disk1,/u01/asmdisks/disk2|external|40
-|FRA|flash recovery area|/u01/asmdisks/disk3|external|20
+|VOTE|ocr and voting disk|/u01/asmdisks/asm-crs01,/u01/asmdisks/asm-crs02,/u01/asmdisks/asm-crs03|normal|2|
+|DATA|Database files|/u01/asmdisks/asm-data01,/u01/asmdisks/ams-data02|external|40
+|FRA|flash recovery area|/u01/asmdisks/asm-fra01|external|20
 
 |Username|Password|
 |--------|--------|
