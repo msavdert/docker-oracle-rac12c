@@ -427,7 +427,103 @@ Oracle 12.2 RAC on Docker
 ### 29. Check status of Cluster and Databases
 
 	docker exec -it rac1 su - grid -c 'crsctl stat res -t'
-	docker exec -it rac1 su - grid -c 'ocrcheck'
+	--------------------------------------------------------------------------------
+	Name           Target  State        Server                   State details       
+	--------------------------------------------------------------------------------
+	Local Resources
+	--------------------------------------------------------------------------------
+	ora.ASMNET1LSNR_ASM.lsnr
+	               ONLINE  ONLINE       rac1                     STABLE
+	               ONLINE  ONLINE       rac2                     STABLE
+	ora.DATA.dg
+	               ONLINE  ONLINE       rac1                     STABLE
+	               ONLINE  ONLINE       rac2                     STABLE
+	ora.FRA.dg
+	               ONLINE  ONLINE       rac1                     STABLE
+	               ONLINE  ONLINE       rac2                     STABLE
+	ora.LISTENER.lsnr
+	               ONLINE  ONLINE       rac1                     STABLE
+	               ONLINE  ONLINE       rac2                     STABLE
+	ora.chad
+	               ONLINE  ONLINE       rac1                     STABLE
+	               ONLINE  ONLINE       rac2                     STABLE
+	ora.net1.network
+	               ONLINE  ONLINE       rac1                     STABLE
+	               ONLINE  ONLINE       rac2                     STABLE
+	ora.ons
+	               ONLINE  ONLINE       rac1                     STABLE
+	               ONLINE  ONLINE       rac2                     STABLE
+	--------------------------------------------------------------------------------
+	Cluster Resources
+	--------------------------------------------------------------------------------
+	ora.LISTENER_SCAN1.lsnr
+	      1        ONLINE  ONLINE       rac2                     STABLE
+	ora.LISTENER_SCAN2.lsnr
+	      1        ONLINE  ONLINE       rac1                     STABLE
+	ora.LISTENER_SCAN3.lsnr
+	      1        ONLINE  ONLINE       rac1                     STABLE
+	ora.MGMTLSNR
+	      1        ONLINE  ONLINE       rac1                     169.254.89.177 10.10
+	                                                             .10.10,STABLE
+	ora.asm
+	      1        ONLINE  ONLINE       rac1                     Started,STABLE
+	      2        ONLINE  ONLINE       rac2                     Started,STABLE
+	      3        OFFLINE OFFLINE                               STABLE
+	ora.cvu
+	      1        ONLINE  ONLINE       rac1                     STABLE
+	ora.mgmtdb
+	      1        ONLINE  ONLINE       rac1                     Open,STABLE
+	ora.qosmserver
+	      1        ONLINE  ONLINE       rac1                     STABLE
+	ora.rac.db
+	      1        ONLINE  ONLINE       rac1                     Open,HOME=/u01/app/o
+	                                                             racle/product/12.2.0
+	                                                             .1/dbhome_1,STABLE
+	      2        ONLINE  ONLINE       rac2                     Open,HOME=/u01/app/o
+	                                                             racle/product/12.2.0
+	                                                             .1/dbhome_1,STABLE
+	ora.rac1.vip
+	      1        ONLINE  ONLINE       rac1                     STABLE
+	ora.rac2.vip
+	      1        ONLINE  ONLINE       rac2                     STABLE
+	ora.scan1.vip
+	      1        ONLINE  ONLINE       rac2                     STABLE
+	ora.scan2.vip
+	      1        ONLINE  ONLINE       rac1                     STABLE
+	ora.scan3.vip
+	      1        ONLINE  ONLINE       rac1                     STABLE
+	--------------------------------------------------------------------------------
+
+	#### $ docker exec -it rac1 su - grid -c 'crs_stat -t'
+	Name           Type           Target    State     Host        
+	------------------------------------------------------------
+	ora....SM.lsnr ora....er.type ONLINE    ONLINE    rac1        
+	ora.DATA.dg    ora....up.type ONLINE    ONLINE    rac1        
+	ora.FRA.dg     ora....up.type ONLINE    ONLINE    rac1        
+	ora....ER.lsnr ora....er.type ONLINE    ONLINE    rac1        
+	ora....AF.lsnr ora....er.type OFFLINE   OFFLINE               
+	ora....N1.lsnr ora....er.type ONLINE    ONLINE    rac2        
+	ora....N2.lsnr ora....er.type ONLINE    ONLINE    rac1        
+	ora....N3.lsnr ora....er.type ONLINE    ONLINE    rac1        
+	ora.MGMTLSNR   ora....nr.type ONLINE    ONLINE    rac1        
+	ora.asm        ora.asm.type   ONLINE    ONLINE    rac1        
+	ora.chad       ora.chad.type  ONLINE    ONLINE    rac1        
+	ora.cvu        ora.cvu.type   ONLINE    ONLINE    rac1        
+	ora.mgmtdb     ora....db.type ONLINE    ONLINE    rac1        
+	ora....network ora....rk.type ONLINE    ONLINE    rac1        
+	ora.ons        ora.ons.type   ONLINE    ONLINE    rac1        
+	ora.qosmserver ora....er.type ONLINE    ONLINE    rac1        
+	ora.rac.db     ora....se.type ONLINE    ONLINE    rac1        
+	ora....C1.lsnr application    ONLINE    ONLINE    rac1        
+	ora.rac1.ons   application    ONLINE    ONLINE    rac1        
+	ora.rac1.vip   ora....t1.type ONLINE    ONLINE    rac1        
+	ora....C2.lsnr application    ONLINE    ONLINE    rac2        
+	ora.rac2.ons   application    ONLINE    ONLINE    rac2        
+	ora.rac2.vip   ora....t1.type ONLINE    ONLINE    rac2        
+	ora.scan1.vip  ora....ip.type ONLINE    ONLINE    rac2        
+	ora.scan2.vip  ora....ip.type ONLINE    ONLINE    rac1        
+	ora.scan3.vip  ora....ip.type ONLINE    ONLINE    rac1
+
 	docker exec -it rac1 su - grid -c 'crsctl query css votedisk'
 
 #### I have checked GIMR configuration database and some other components with:
