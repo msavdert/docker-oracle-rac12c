@@ -426,7 +426,7 @@ Oracle 12.2 RAC on Docker
 
 ### 29. Check status of Cluster and Databases
 
-	docker exec -it rac1 su - grid -c 'crsctl stat res -t'
+	$ docker exec -it rac1 su - grid -c 'crsctl stat res -t'
 	--------------------------------------------------------------------------------
 	Name           Target  State        Server                   State details       
 	--------------------------------------------------------------------------------
@@ -494,7 +494,7 @@ Oracle 12.2 RAC on Docker
 	      1        ONLINE  ONLINE       rac1                     STABLE
 	--------------------------------------------------------------------------------
 
-	#### $ docker exec -it rac1 su - grid -c 'crs_stat -t'
+	$ docker exec -it rac1 su - grid -c 'crs_stat -t'
 	Name           Type           Target    State     Host        
 	------------------------------------------------------------
 	ora....SM.lsnr ora....er.type ONLINE    ONLINE    rac1        
@@ -526,7 +526,7 @@ Oracle 12.2 RAC on Docker
 
 #### I have checked GIMR configuration database and some other components with:
 
-	docker exec -it rac1 su - grid -c 'srvctl config mgmtdb'
+	$ docker exec -it rac1 su - grid -c 'srvctl config mgmtdb'
 
 	Database unique name: _mgmtdb
 	Database name: 
@@ -545,11 +545,11 @@ Oracle 12.2 RAC on Docker
 	Cluster name: rac
 	Database instance: -MGMTDB
 
-	docker exec -it rac1 su - grid -c 'srvctl status database -d RAC'
+	$ docker exec -it rac1 su - grid -c 'srvctl status database -d RAC'
 	Instance RAC1 is running on node rac1
 	Instance RAC2 is running on node rac2
 
-	docker exec -it rac1 su - grid -c 'srvctl config database -d RAC'
+	$ docker exec -it rac1 su - grid -c 'srvctl config database -d RAC'
 	Database unique name: RAC
 	Database name: RAC
 	Oracle home: /u01/app/oracle/product/12.2.0.1/dbhome_1
@@ -579,7 +579,7 @@ Oracle 12.2 RAC on Docker
 	Default network number for database services: 
 	Database is administrator managed
 
-	docker exec -it rac1 su - grid -c 'lsnrctl status'
+	$ docker exec -it rac1 su - grid -c 'lsnrctl status'
 	LSNRCTL for Linux: Version 12.2.0.1.0 - Production on 30-NOV-2017 21:54:30
 	
 	Copyright (c) 1991, 2016, Oracle.  All rights reserved.
