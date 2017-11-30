@@ -58,7 +58,7 @@ Oracle 12.2 RAC on Docker
 
 ### 3. enable docker service
 
-    systemctl start docker 
+    systemctl start docker
     systemctl enable docker
 
 ### 4. Create asm disks
@@ -72,8 +72,8 @@ Oracle 12.2 RAC on Docker
     dd if=/dev/zero of=/depo/asm/asm-crs02 bs=1024k count=2000
     dd if=/dev/zero of=/depo/asm/asm-crs03 bs=1024k count=2000
 
-### 5. download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /depo/12.2/
-
+### 5. Create /depo/12.2/ folder ana download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /depo/12.2/
+    # mkdir -p /depo/12.2/
     # ls -al /depo/12.2/
     total 6297260
     -rw-r--r--. 1 root root 3453696911 Feb 24  2017 linuxx64_12201_database.zip
@@ -83,7 +83,7 @@ Oracle 12.2 RAC on Docker
 
     docker network create --driver=bridge \
     --subnet=192.168.100.0/24 --gateway=192.168.100.1 \
-    --ip-range=192.168.100.128/25 pub
+    --ip-range=192.168.100.128/25 pub 
 
     docker network create --driver=bridge \
     --subnet=10.10.10.0/24 --gateway=10.10.10.1 \
@@ -148,7 +148,7 @@ Oracle 12.2 RAC on Docker
 
 	docker exec -it rac1 cp /etc/resolv.conf /tmp/resolv.conf && \
 	docker exec -it rac1 sed -i '/search/s/$/ example.com\nnameserver 192.168.100.20/' /tmp/resolv.conf && \
-	docker exec -it rac1 cp -f /tmp/resolv.conf /etc/resolv.conf
+	docker exec -it rac1 cp -f /tmp/resolv.conf /etc/resolv.conf 
 
 	docker exec -it rac2 cp /etc/resolv.conf /tmp/resolv.conf && \
 	docker exec -it rac2 sed -i '/search/s/$/ example.com\nnameserver 192.168.100.20/' /tmp/resolv.conf && \
@@ -158,7 +158,7 @@ Oracle 12.2 RAC on Docker
 
 	docker exec -it rac1 mount /u01/asmdisks/ && \
 	docker exec -it rac1 chown -R grid:asmadmin /u01/asmdisks/ && \
-	docker exec -it rac1 chmod -R 777 /u01/asmdisks/
+	docker exec -it rac1 chmod -R 777 /u01/asmdisks/ 
 
 	docker exec -it rac2 mount /u01/asmdisks/ && \
 	docker exec -it rac2 chown -R grid:asmadmin /u01/asmdisks/ && \
@@ -413,13 +413,13 @@ Oracle 12.2 RAC on Docker
 	 -databaseType MULTIPURPOSE \
 	 -nodelist rac1,rac2'
 
-### 29. Check status of Cluster and Database
+### 29. Check status of Cluster and Databases
 
 	docker exec -it rac1 su - grid -c 'crsctl stat res -t'
 	docker exec -it rac1 su - grid -c 'ocrcheck'
 	docker exec -it rac1 su - grid -c 'crsctl query css votedisk'
 
-#### I have checked GIMR configuration database with:
+#### I have checked GIMR configuration database and some other components with:
 
 	docker exec -it rac1 su - grid -c 'srvctl config mgmtdb'
 
