@@ -524,19 +524,102 @@ Oracle 12.2 RAC on Docker
 	ora.scan2.vip  ora....ip.type ONLINE    ONLINE    rac1        
 	ora.scan3.vip  ora....ip.type ONLINE    ONLINE    rac1
 
-	docker exec -it rac1 su - grid -c 'crsctl query css votedisk'
-
 #### I have checked GIMR configuration database and some other components with:
 
 	docker exec -it rac1 su - grid -c 'srvctl config mgmtdb'
 
-	docker exec -it rac1 su - grid -c 'srvctl status diskgroup -diskgroup FRA'
-	docker exec -it rac1 su - grid -c 'srvctl status diskgroup -diskgroup DATA'
+	Database unique name: _mgmtdb
+	Database name: 
+	Oracle home: <CRS home>
+	Oracle user: grid
+	Spfile: +DATA/_MGMTDB/PARAMETERFILE/spfile.270.961447821
+	Password file: 
+	Domain: 
+	Start options: open
+	Stop options: immediate
+	Database role: PRIMARY
+	Management policy: AUTOMATIC
+	Type: Management
+	PDB name: GIMR_DSCREP_10
+	PDB service: GIMR_DSCREP_10
+	Cluster name: rac
+	Database instance: -MGMTDB
 
 	docker exec -it rac1 su - grid -c 'srvctl status database -d RAC'
+	Instance RAC1 is running on node rac1
+	Instance RAC2 is running on node rac2
+
 	docker exec -it rac1 su - grid -c 'srvctl config database -d RAC'
+	Database unique name: RAC
+	Database name: RAC
+	Oracle home: /u01/app/oracle/product/12.2.0.1/dbhome_1
+	Oracle user: oracle
+	Spfile: +DATA/RAC/PARAMETERFILE/spfile.298.961450881
+	Password file: +DATA/RAC/PASSWORD/pwdrac.282.961450333
+	Domain: 
+	Start options: open
+	Stop options: immediate
+	Database role: PRIMARY
+	Management policy: AUTOMATIC
+	Server pools: 
+	Disk Groups: FRA,DATA
+	Mount point paths: 
+	Services: 
+	Type: RAC
+	Start concurrency: 
+	Stop concurrency: 
+	OSDBA group: dba
+	OSOPER group: dba
+	Database instances: RAC1,RAC2
+	Configured nodes: rac1,rac2
+	CSS critical: no
+	CPU count: 0
+	Memory target: 0
+	Maximum memory: 0
+	Default network number for database services: 
+	Database is administrator managed
 
 	docker exec -it rac1 su - grid -c 'lsnrctl status'
+	LSNRCTL for Linux: Version 12.2.0.1.0 - Production on 30-NOV-2017 21:54:30
+	
+	Copyright (c) 1991, 2016, Oracle.  All rights reserved.
+	
+	Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER)))
+	STATUS of the LISTENER
+	------------------------
+	Alias                     LISTENER
+	Version                   TNSLSNR for Linux: Version 12.2.0.1.0 - Production
+	Start Date                30-NOV-2017 20:29:11
+	Uptime                    0 days 1 hr. 25 min. 18 sec
+	Trace Level               off
+	Security                  ON: Local OS Authentication
+	SNMP                      OFF
+	Listener Parameter File   /u01/app/12.2.0.1/grid/network/admin/listener.ora
+	Listener Log File         /u01/app/grid/diag/tnslsnr/rac1/listener/alert/log.xml
+	Listening Endpoints Summary...
+	  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=LISTENER)))
+	  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.100.10)(PORT=1521)))
+	  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.100.12)(PORT=1521)))
+	Services Summary...
+	Service "+ASM" has 1 instance(s).
+	  Instance "+ASM1", status READY, has 1 handler(s) for this service...
+	Service "+ASM_DATA" has 1 instance(s).
+	  Instance "+ASM1", status READY, has 1 handler(s) for this service...
+	Service "+ASM_FRA" has 1 instance(s).
+	  Instance "+ASM1", status READY, has 1 handler(s) for this service...
+	Service "5f38a9ffc2956d8ee0530a64a8c03204" has 1 instance(s).
+	  Instance "RAC1", status READY, has 1 handler(s) for this service...
+	Service "RAC" has 1 instance(s).
+	  Instance "RAC1", status READY, has 1 handler(s) for this service...
+	Service "RACXDB" has 1 instance(s).
+	  Instance "RAC1", status READY, has 1 handler(s) for this service...
+	Service "pdb1" has 1 instance(s).
+	  Instance "RAC1", status READY, has 1 handler(s) for this service...
+	The command completed successfully
+
+	docker exec -it rac1 su - grid -c 'srvctl status diskgroup -diskgroup FRA'
+	docker exec -it rac1 su - grid -c 'srvctl status diskgroup -diskgroup DATA'
+	docker exec -it rac1 su - grid -c 'crsctl query css votedisk'
 
 	docker exec -it rac1 su - oracle -c 'sqlplus / as sysdba'
 
