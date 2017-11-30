@@ -72,7 +72,7 @@ Oracle 12.2 RAC on Docker
     dd if=/dev/zero of=/depo/asm/asm-crs02 bs=1024k count=2000
     dd if=/dev/zero of=/depo/asm/asm-crs03 bs=1024k count=2000
 
-### 5. Create /depo/12.2/ folder ana download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /depo/12.2/
+### 5. Create /depo/12.2/ path and download Oracle 12c Release 2 (12.2) Clusterware and Database software and locate them on /depo/12.2/
     # mkdir -p /depo/12.2/
     # ls -al /depo/12.2/
     total 6297260
@@ -103,7 +103,7 @@ Oracle 12.2 RAC on Docker
     --ip 192.168.100.20 \
     melihsavdert/docker-nfs-dns-server
 
-### 8. Start two containers (rac1 and rac2) for rac installation
+### 8. Start two containers (rac1 and rac2) for RAC installation (some ports have been opened for OEM13c installation in the future)
 
 	docker run --rm \
 	--privileged \
@@ -183,7 +183,7 @@ Oracle 12.2 RAC on Docker
 	#192.168.100.15 rac-scan.example.com rac-scan
 	#192.168.100.16 rac-scan.example.com rac-scan
 
-### 13. Check DNS is healthy
+### 13. Check DNS is healthy each nodes
 
 	$ docker exec -it rac1 nslookup rac-scan
 	Server:		192.168.100.20
@@ -196,7 +196,18 @@ Oracle 12.2 RAC on Docker
 	Name:	rac-scan.example.com
 	Address: 192.168.100.14
 
-### 14. Copy Oracle Database and Grid Infrastructure inside the rac1 container
+	$ docker exec -it rac2 nslookup rac-scan
+	Server:		192.168.100.20
+	Address:	192.168.100.20#53
+
+	Name:	rac-scan.example.com
+	Address: 192.168.100.15
+	Name:	rac-scan.example.com
+	Address: 192.168.100.16
+	Name:	rac-scan.example.com
+	Address: 192.168.100.14
+
+### 14. Copy Oracle Database and Grid Infrastructure software inside the rac1 container
 
 	docker exec -it rac1 su - oracle -c ' \
 	unzip -q /software/12.2/linuxx64_12201_database.zip -d /u01/software/'
